@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.stream.*;
+import java.util.*;
 
 public class Challenges {
 
@@ -127,8 +125,8 @@ public class Challenges {
         }
 
         return spreadsheet;
+
         *//*List<String[]> lines = new ArrayList<>();
-        //sc.nextLine(); //skip line 1
         while (sc.hasNextLine())
             lines.add(sc.nextLine().split(" "));
 
@@ -174,11 +172,7 @@ public class Challenges {
         while (steps[1] < value) {
             // resizing array
             int[][] arr2 = new int[arr.length + 2][arr.length + 2];
-            for (int l = 1; l <= arr.length; l++) {
-                for (int k = 1; k <= arr.length; k++) {
-                    arr2[l][k] = arr[l - 1][k - 1];
-                }
-            }
+            arr2 = resizeArray(arr, arr2);
             // going up
             goingUp(value, arr2, steps);
             if(steps[1] > value)
@@ -238,9 +232,15 @@ public class Challenges {
     }
 
     // method for resing an array
-    private static int[][] resizeArray(){
+    private static int[][] resizeArray(int[][] oldArr, int[][] newArr){
 
+        for (int l = 1; l <= oldArr.length; l++) {
+            for (int k = 1; k <= oldArr.length; k++) {
+                newArr[l][k] = oldArr[l - 1][k - 1];
+            }
+        }
 
+        return newArr;
     }
 
     // method for going right in array
@@ -298,4 +298,5 @@ public class Challenges {
 
         return nextBigger;
     }
+
 }

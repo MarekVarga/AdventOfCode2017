@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 public class Challenges {
@@ -105,35 +109,6 @@ public class Challenges {
 
         return checkSum;
     }
-
-    /**
-     *
-     * @// TODO: allow input value for day2 challenge to be read
-     */
-    /*public static ArrayList<int[]> scanInput2(){
-        ArrayList<int[]> spreadsheet = new ArrayList<>();
-        int i = 0, j = 0;
-
-        System.out.println("Enter you input spreadsheet");
-
-        while(scan.hasNextLine()){
-            while(scan.hasNextInt()){
-                spreadsheet.add(scan.nextInt());
-                j++;
-            }
-            i++;
-        }
-
-        return spreadsheet;
-
-        *//*List<String[]> lines = new ArrayList<>();
-        while (sc.hasNextLine())
-            lines.add(sc.nextLine().split(" "));
-
-        lines.stream().map(Arrays::toString).forEach(System.out::println);*//*
-        *//*String input = "";
-        return Stream.of(input.split("\n")).map(line -> line.split(" ")).toArray(String[][]::new);*//*
-    }*/
 
     // day 3
     //******************************************************************************************************************
@@ -299,4 +274,195 @@ public class Challenges {
         return nextBigger;
     }
 
+    // day 4
+    //******************************************************************************************************************
+    public static int[] day4(){
+
+        // part 1
+        int[] valid = new int[]{ 0, 0};
+        String[] passphrases = scanInput4();
+
+        for(int i = 0; i < passphrases.length; i++){
+            String[] passphraseIntoPieces = passphrases[i].split("\\s");
+            for(int j = 0; j < passphraseIntoPieces.length; j++){
+                for(int k = j+1; k < passphraseIntoPieces.length; k++){
+                    if(passphraseIntoPieces[j].equals(passphraseIntoPieces[k])) {
+                        j = passphraseIntoPieces.length;
+                        break;
+                    }
+                }
+                if( (j+1) == passphraseIntoPieces.length)
+                    valid[0]++;
+            }
+        }
+
+        // part 2
+       for(String passphraseLine : passphrases) {
+                if (isNotAnagram(passphraseLine))
+                    valid[1]++;
+            }
+
+        return valid;
+    }
+
+    // method for determining anagrams
+    private static boolean isNotAnagram(String passphraseLine){
+        ArrayList<String> otherPrases = new ArrayList<String>();
+        ArrayList<String> phrases = new ArrayList<>();
+        char[] charArray;
+        String[] passphraseIntoPieces = passphraseLine.split("\\s");
+        for(String phrase : passphraseIntoPieces){
+            charArray = phrase.toCharArray();
+            Arrays.sort(charArray);
+            phrases.add(new String(charArray));
+            String tmp = new String(charArray);
+            if ( !otherPrases.contains(tmp) ){
+                otherPrases.add(tmp);
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // method for scanning input for day 4
+    private static String[] scanInput4(){
+        System.out.println("Insert you passphrases: ");
+        String[] input = new String[0];
+        String[] tmp = new String[1];
+        String data;
+        for(int i = 0; scan.hasNextLine(); i++) {
+            input = new String[i+1];
+            for(int j = 0; j < i; j++){
+                input[j] = tmp[j];
+            }
+            data = scan.nextLine();
+            input[i] = data;
+            tmp = new String[i+2];
+            for(int j = 0; j <= i; j++)
+                tmp[j]= input[j];
+        }
+        return input;
+    }
+
+    // day 5
+    //******************************************************************************************************************
+    public static int[] day5(){
+        int[] steps = new int[] {0 ,0};
+        ArrayList<Integer> jumpList = scanInput5();
+        ArrayList<Integer> jumpList2 = (ArrayList<Integer>) jumpList.clone();
+
+        // part 1
+        steps[0] = calSteps1(jumpList);
+
+        // part 2
+        steps[1] = calSteps2(jumpList2);
+
+        return steps;
+    }
+
+    // method for scanning input for day 5
+    private static ArrayList<Integer> scanInput5(){
+        System.out.println("Enter your list of jumps: ");
+        ArrayList<Integer> jumpsList = new ArrayList<Integer>();
+        while( scan.hasNextInt() ){
+            jumpsList.add(scan.nextInt());
+        }
+        return jumpsList;
+    }
+
+    // method for calculating number of steps for part 1
+    private static int calSteps1(ArrayList<Integer> jumpList){
+        int stepsNum = 0;
+        int jump = 0;
+
+        for(int i = 0; i < jumpList.size(); ){
+            jump = jumpList.get(i);
+            i += jump;
+            jumpList.set(i-jump,jumpList.get(i-jump)+1);
+            stepsNum++;
+        }
+
+        return stepsNum;
+    }
+
+    // method for calculating number of steps for part 2
+    private static int calSteps2(ArrayList<Integer> jumpList){
+        int stepsNum = 0;
+        int jump = 0;
+
+        for(int i = 0; i < jumpList.size(); ){
+            jump = jumpList.get(i);
+            i += jump;
+            if (jumpList.get(i-jump) < 3 )
+                jumpList.set(i-jump,jumpList.get(i-jump)+1);
+            else
+                jumpList.set(i-jump,jumpList.get(i-jump)-1);
+            stepsNum++;
+        }
+        return stepsNum;
+    }
+
+    // day
+    //******************************************************************************************************************
+    public static int[] day6(){
+        int[] cycles = new int[] {0, 0};
+        ArrayList<Integer> blocks = scanInput6();
+        ArrayList<String> seenCombination = new ArrayList<String>();
+        ArrayList<String> newCombination = new ArrayList<String>();
+        String usedCombination;
+
+        // part 1
+        while( !seenCombination.contains(blocks.toString())){
+            seenCombination.add(blocks.toString());
+            int highestIndex = highestIndexOf(blocks);
+            int blocksOfHighestIndex = blocks.get(highestIndex);
+            blocks.set(highestIndex, 0);
+            blocks = blocksRed(highestIndex, blocksOfHighestIndex, blocks);
+            newCombination.add(blocks.toString());
+            cycles[0]++;
+        }
+
+        // part 2
+        usedCombination = newCombination.remove(cycles[0]-1);
+        cycles[1] = cycles[0] - newCombination.indexOf(usedCombination) - 1;
+
+        return cycles;
+    }
+
+    // method for finding the highest index of arraylist
+    private static int highestIndexOf(ArrayList<Integer> blocks){
+        int highestBlockValue = 0, highestIndex = 0;
+
+        for( int i = 0; i < blocks.size(); i++)
+            if( blocks.get(i) > highestBlockValue) {
+                highestBlockValue = blocks.get(i);
+                highestIndex = i;
+        }
+
+        return highestIndex;
+    }
+
+    // method for redistributing blocks
+    private static ArrayList<Integer> blocksRed(int highestIndex, int blocksOfHighestIndex, ArrayList<Integer> blocks){
+        int currentIndexRed = highestIndex+1;
+
+        for( int i = blocksOfHighestIndex; i > 0; i--, currentIndexRed++){
+            if (currentIndexRed == (blocks.size()) )
+                currentIndexRed = 0;
+            blocks.set(currentIndexRed,blocks.get(currentIndexRed)+1);
+        }
+
+        return blocks;
+    }
+
+    // method for scanning input
+    private static ArrayList<Integer> scanInput6(){
+        System.out.println("Enter your blocks: ");
+        ArrayList<Integer> input = new ArrayList<Integer>();
+        while(scan.hasNextInt())
+            input.add(scan.nextInt());
+        return input;
+    }
 }

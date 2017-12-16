@@ -2,7 +2,8 @@
 public class Main {
 
     public static void main(String[] args){
-        int[] day1 = Challenges.day1();
+
+        /*int[] day1 = Challenges.day1();
         System.out.println("The sum for the first part is: "+day1[0]+"\nThe sum for the second part is: "+day1[1]);
 
         int[] day2 = Challenges.day2();
@@ -39,7 +40,10 @@ public class Main {
         System.out.println("Danger is: "+day13[0]+"\tand path is not blocked at: "+day13[1]);
 
         int[] day15 = Challenges4.day15();
-        System.out.println("Number of matches are: "+day15[0]+"\tand after conditions are applied number of matches are: "+day15[1]);
+        System.out.println("Number of matches are: "+day15[0]+"\tand after conditions are applied number of matches are: "+day15[1]);*/
+
+        String[] day16 = Challenges5.day16();
+        System.out.println("Sequence of programs will be "+day16[0]+"\tand after programs complete this dance for 1 billion times: "+day16[1]);
     }
 
 }

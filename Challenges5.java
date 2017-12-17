@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Challenges5 {
@@ -115,5 +116,35 @@ public class Challenges5 {
         }
         input.add(i,tmp.toString());
         return input;
+    }
+
+    // day 17
+    //******************************************************************************************************************
+    public static int[] day17(){
+        int[] value = new int[]{0,0};
+        ArrayList<Integer> numbers = new ArrayList<>();
+        numbers.add(0);
+        int index = 1;
+        int steps = 348;
+
+        // part 1
+        for(int i = 0; i <= 2017; i++){
+            numbers.add(index,i+1);
+            index = (index + steps) % numbers.size() + 1;
+        }
+
+        value[0] = numbers.get(numbers.indexOf(2017)+1);
+
+        // part 2
+       int numbersCount = 1;
+       index = 0;
+       for (int i = 1; i < 50000000; i++){
+           index = (index + steps) % numbersCount + 1;
+           numbersCount++;
+           if( index == 1)
+               value[1] = i;
+       }
+
+        return value;
     }
 }

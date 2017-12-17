@@ -42,8 +42,11 @@ public class Main {
         int[] day15 = Challenges4.day15();
         System.out.println("Number of matches are: "+day15[0]+"\tand after conditions are applied number of matches are: "+day15[1]);*/
 
-        String[] day16 = Challenges5.day16();
-        System.out.println("Sequence of programs will be "+day16[0]+"\tand after programs complete this dance for 1 billion times: "+day16[1]);
+        /*String[] day16 = Challenges5.day16();
+        System.out.println("Sequence of programs will be "+day16[0]+"\tand after programs complete this dance for 1 billion times: "+day16[1]);*/
+
+        int[] day17 = Challenges5.day17();
+        System.out.println("The next value is: "+day17[0]+"\tand after 0 it is: "+day17[1]);
     }
 
 }

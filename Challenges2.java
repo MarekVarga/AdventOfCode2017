@@ -1,3 +1,5 @@
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.util.*;
 
 public class Challenges2 {
@@ -6,7 +8,7 @@ public class Challenges2 {
 
     public static String[] day7(){
         String[] towName = new String[2];
-        String[] towers = scanInput7();
+        String[] towers = Challenges.scanInput4("day7");
         String[] firstLine = towers[0].split("\\s");
 
         // part 1
@@ -18,28 +20,7 @@ public class Challenges2 {
         return towName;
     }
 
-    // method for scanning input for day 7 and day 8
-    private static String[] scanInput7(){
-        String[] inputs = new String[0];
-        String[] tmp = new String[1];
-        String data;
-
-        System.out.println("Enter your input; ");
-        for(int i = 0; scan.hasNextLine(); i++) {
-            inputs = new String[i+1];
-            for(int j = 0; j < i; j++){
-                inputs[j] = tmp[j];
-            }
-            data = scan.nextLine();
-            inputs[i] = data;
-            tmp = new String[i+2];
-            for(int j = 0; j <= i; j++)
-                tmp[j]= inputs[j];
-        }
-
-        return inputs;
-    }
-
+    // recursive method for finding the bottom tower
     private static String findTowerBelow(String towerNameAbove, String[] towerList){
 
         for( int i = 0; i < towerList.length; i++){
@@ -58,7 +39,7 @@ public class Challenges2 {
     //******************************************************************************************************************
     public static int[] day8(){
         int[] value = new int[] { 0, 0};
-        String[] inputRegisters = scanInput7();
+        String[] inputRegisters = Challenges.scanInput4("day8");
         ArrayList<Register> registers = new ArrayList<Register>(inputRegisters.length);
 
         // creating registers
@@ -68,43 +49,16 @@ public class Challenges2 {
         }
         // changing register values
         for(Register register: registers){
-            switch (register.conditionSign){
-                case "<" :
-                    register = caseLess(register, registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-                case "<=" :
-                    register = caseLessOrEqual(register, registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-                case ">" :
-                    register = caseGreater(register,registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-                case ">=" :
-                    register = caseGreaterOrEqual(register, registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-                case "==" :
-                    register = caseEqual(register, registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-                default :
-                    register = caseNotEqual(register, registers);
-                    value[1] = newHighestValue(register, value[1]);
-                    registers = setNewValue(registers, register.name, register.value);
-                    break;
-            }
+            register = changeRegValue(register, registers);
+            // part 2
+            value[1] = newHighestValue(register, value[1]);
+            registers = setNewValue(registers, register.name, (int) register.value);
         }
+        // part 1
         // finding register with the greatest value
         for(Register register: registers){
             if( register.value > value[0] )
-                value[0] = register.value;
+                value[0] = (int) register.value;
         }
 
         return value;
@@ -114,7 +68,7 @@ public class Challenges2 {
     private static int getDependencyRegisterValue(ArrayList<Register> registers, String dependencyRegister){
         for(Register register: registers)
             if( register.name.equals(dependencyRegister) )
-                return register.value;
+                return (int) register.value;
         return 0;
     }
 
@@ -132,92 +86,73 @@ public class Challenges2 {
     private static int newHighestValue(Register register, int previousHighestValue){
 
         if( register.value > previousHighestValue )
-            return register.value;
+            return (int) register.value;
 
         return previousHighestValue;
     }
 
-    private static Register caseLess(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) < register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
+    // method for setting new register value
+    private static Register setNewRegisterValue(Register register){
+        if( register.operation.equals("inc"))
+            register.value += register.valueChange;
+        else
+            register.value -= register.valueChange;
 
         return register;
     }
 
-    private static Register caseLessOrEqual(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) <= register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
-
-        return register;
+    private static boolean caseLess(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) < register.dependencyRegisterValue);
     }
 
-    private static Register caseGreater(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) > register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
-
-        return register;
+    private static boolean caseLessOrEqual(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) <= register.dependencyRegisterValue);
     }
 
-    private static Register caseGreaterOrEqual(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) >= register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
-
-        return register;
+    private static boolean caseGreater(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) > register.dependencyRegisterValue);
     }
 
-    private static Register caseEqual(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) == register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
-
-        return register;
+    private static boolean caseGreaterOrEqual(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) >= register.dependencyRegisterValue);
     }
 
-    private static Register caseNotEqual(Register register, ArrayList<Register> registers){
-        if( getDependencyRegisterValue(registers, register.dependencyRegister) != register.dependencyRegisterValue){
-            switch ( register.operation ){
-                case "inc" :
-                    register.value += register.valueChange;
-                    break;
-                default:
-                    register.value -= register.valueChange;
-            }
-        }
+    private static boolean caseEqual(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) == register.dependencyRegisterValue);
+    }
 
+    private static boolean caseNotEqual(Register register, ArrayList<Register> registers){
+        return ( getDependencyRegisterValue(registers, register.dependencyRegister) != register.dependencyRegisterValue);
+    }
+
+    // method for changing register value if dependency condition is met
+    private static Register changeRegValue(Register register, ArrayList<Register> registers){
+        switch (register.conditionSign){
+            case "<" :
+                if( caseLess(register, registers) )
+                    return setNewRegisterValue(register);
+                break;
+            case "<=" :
+                if( caseLessOrEqual(register, registers) )
+                    return setNewRegisterValue(register);
+                break;
+            case ">" :
+                if( caseGreater(register,registers) )
+                    return setNewRegisterValue(register);
+                break;
+            case ">=" :
+                if( caseGreaterOrEqual(register, registers) )
+                    return setNewRegisterValue(register);
+                break;
+            case "==" :
+                if( caseEqual(register, registers) )
+                    return setNewRegisterValue(register);
+                break;
+            default :
+                if( caseNotEqual(register, registers) )
+                    return setNewRegisterValue(register);
+                break;
+        }
         return register;
     }
 }

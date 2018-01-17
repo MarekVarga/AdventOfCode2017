@@ -3,7 +3,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        /*int[] day1 = Challenges.day1();
+        int[] day1 = Challenges.day1();
         System.out.println("The sum for the first part is: "+day1[0]+"\nThe sum for the second part is: "+day1[1]);
 
         int[] day2 = Challenges.day2();
@@ -40,13 +40,29 @@ public class Main {
         System.out.println("Danger is: "+day13[0]+"\tand path is not blocked at: "+day13[1]);
 
         int[] day15 = Challenges4.day15();
-        System.out.println("Number of matches are: "+day15[0]+"\tand after conditions are applied number of matches are: "+day15[1]);*/
+        System.out.println("Number of matches are: "+day15[0]+"\tand after conditions are applied number of matches are: "+day15[1]);
 
-        /*String[] day16 = Challenges5.day16();
-        System.out.println("Sequence of programs will be "+day16[0]+"\tand after programs complete this dance for 1 billion times: "+day16[1]);*/
+        String[] day16 = Challenges5.day16();
+        System.out.println("Sequence of programs will be "+day16[0]+"\tand after programs complete this dance for 1 billion times: "+day16[1]);
 
         int[] day17 = Challenges5.day17();
         System.out.println("The next value is: "+day17[0]+"\tand after 0 it is: "+day17[1]);
+
+        int[] day18 = Challenges5.day18();
+        System.out.println("The first value after recovery is: "+day18[0]);
+
+        int[] day25 = Challenges6.day25();
+        System.out.println("Checksum after 6 steps is: "+day25[0]);
+
+        int[] day22 = Challenges6.day22();
+        System.out.println("Virus spreads: "+day22[0]+" times\tand after virus evolves virus spreads: "+day22[1]+" times");
+
+        int[] day23 = Challenges6.day23();
+        System.out.println("Mul instruction is performed : "+day23[0]+" times \tand value of register \"h\" is: "+day23[1]);
+
+        int[] day24 = Challenges5.day24();
+        System.out.println("The strongest bridge is: "+day24[0]+"\tand the longest strongest is: "+day24[1]);
+
     }
 
 }

@@ -1,7 +1,6 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import jdk.internal.util.xml.impl.Input;
+
+import java.io.*;
 import java.util.*;
 
 public class Challenges {
@@ -50,8 +49,19 @@ public class Challenges {
 
     // input for day1 challenge
     private static String scanInput1(){
-        System.out.println("Enter you input: ");
-        return scan.next();
+        String fileName = "day1";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+             line = bufferedReader.readLine();
+             bufferedReader.close();
+        } catch (FileNotFoundException exception){
+            System.out.println("unable to find file "+fileName);
+        } catch (IOException exception){
+            System.out.println("unable to read from file "+fileName);
+        }
+        return line;
     }
 
     // day 2 challenge
@@ -202,8 +212,19 @@ public class Challenges {
 
     // input for day3 challenge
     private static int scanInput3(){
-        System.out.println("Enter you input: ");
-        return scan.nextInt();
+        String fileName = "day3";
+        int input =0;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            input = bufferedReader.read();
+            bufferedReader.close();
+        } catch (FileNotFoundException ex){
+            System.out.println("unable to find file "+fileName);
+        } catch (IOException ex){
+            System.out.println("unable to read from file "+fileName);
+        }
+        return input;
     }
 
     // method for resing an array
@@ -280,7 +301,7 @@ public class Challenges {
 
         // part 1
         int[] valid = new int[]{ 0, 0};
-        String[] passphrases = scanInput4();
+        String[] passphrases = scanInput4("day4");
 
         for(int i = 0; i < passphrases.length; i++){
             String[] passphraseIntoPieces = passphrases[i].split("\\s");
@@ -327,21 +348,29 @@ public class Challenges {
     }
 
     // method for scanning input for day 4
-    private static String[] scanInput4(){
-        System.out.println("Insert you passphrases: ");
+    public static String[] scanInput4(String fileName){
         String[] input = new String[0];
         String[] tmp = new String[1];
         String data;
-        for(int i = 0; scan.hasNextLine(); i++) {
-            input = new String[i+1];
-            for(int j = 0; j < i; j++){
-                input[j] = tmp[j];
+
+        try{
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            for(int i = 0; (data = bufferedReader.readLine()) != null; i++){
+                input = new String[i+1];
+                for(int j = 0; j < i; j++){
+                    input[j] = tmp[j];
+                }
+                input[i] = data;
+                tmp = new String[i+2];
+                for(int j = 0; j <= i; j++)
+                    tmp[j]= input[j];
             }
-            data = scan.nextLine();
-            input[i] = data;
-            tmp = new String[i+2];
-            for(int j = 0; j <= i; j++)
-                tmp[j]= input[j];
+            bufferedReader.close();
+        }catch (FileNotFoundException ex){
+            System.out.println("unable to find file "+fileName);
+        } catch (IOException ex){
+            System.out.println("unable to read from file "+fileName);
         }
         return input;
     }
@@ -364,10 +393,20 @@ public class Challenges {
 
     // method for scanning input for day 5
     private static ArrayList<Integer> scanInput5(){
-        System.out.println("Enter your list of jumps: ");
-        ArrayList<Integer> jumpsList = new ArrayList<Integer>();
-        while( scan.hasNextInt() ){
-            jumpsList.add(scan.nextInt());
+        ArrayList<Integer> jumpsList = new ArrayList<>();
+        String fileName = "day5";
+        String line;
+        try{
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while ( (line = bufferedReader.readLine()) != null ){
+                jumpsList.add(Challenges4.stringToInt(line));
+            }
+            bufferedReader.close();
+        } catch (FileNotFoundException ex){
+            System.out.println("unable to find file "+fileName);
+        } catch (IOException ex){
+            System.out.println("unable to read from file "+fileName);
         }
         return jumpsList;
     }
@@ -404,13 +443,13 @@ public class Challenges {
         return stepsNum;
     }
 
-    // day
+    // day 6
     //******************************************************************************************************************
     public static int[] day6(){
         int[] cycles = new int[] {0, 0};
         ArrayList<Integer> blocks = scanInput6();
-        ArrayList<String> seenCombination = new ArrayList<String>();
-        ArrayList<String> newCombination = new ArrayList<String>();
+        ArrayList<String> seenCombination = new ArrayList<>();
+        ArrayList<String> newCombination = new ArrayList<>();
         String usedCombination;
 
         // part 1
@@ -459,8 +498,10 @@ public class Challenges {
 
     // method for scanning input
     private static ArrayList<Integer> scanInput6(){
-        System.out.println("Enter your blocks: ");
-        ArrayList<Integer> input = new ArrayList<Integer>();
+        ArrayList<Integer> input = new ArrayList<>();
+        try { scan = new Scanner(new File("day6")); }
+        catch (FileNotFoundException ex){ System.out.println("Unable to find file"); }
+
         while(scan.hasNextInt())
             input.add(scan.nextInt());
         return input;

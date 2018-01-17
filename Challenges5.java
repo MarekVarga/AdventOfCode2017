@@ -1,4 +1,7 @@
-import java.lang.reflect.Array;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+import java.io.*;
+import java.sql.Array;
 import java.util.*;
 
 public class Challenges5 {
@@ -98,8 +101,9 @@ public class Challenges5 {
         int i = 0;
         String tmpStr = new String();
         StringBuilder tmp = new StringBuilder();
+        try{ scanner = new Scanner(new File("day16"));}
+        catch (FileNotFoundException ex){System.out.println("Unable to find file");}
 
-        System.out.println("Enter your input: ");
         while( scanner.hasNext() ){
             /*while( scanner.next().char )*/
             tmpStr = scanner.next();
@@ -145,6 +149,173 @@ public class Challenges5 {
                value[1] = i;
        }
 
+       return value;
+    }
+
+    // day 18
+    //******************************************************************************************************************
+    public static int[] day18(){
+        int[] value = new int[]{0,0};
+        ArrayList<String> input = scanInput18("day18");
+        ArrayList<Register> registers = initRegisters(input);
+        long freq = 0;
+        long regChng = 0;
+        Register register;
+
+        // part 1
+        for (int j = 0; j < input.size(); j++){
+            String[] inputLineSplit = input.get(j).split("\\s");
+            if ( inputLineSplit.length > 2 )
+                regChng = checkValue(registers,inputLineSplit[2]);
+                register = findRegister(registers,inputLineSplit[1]);
+            switch (inputLineSplit[0]){
+                case "set" :
+                    register.value = regChng;
+                    break;
+                case "add" :
+                    register.value += regChng;
+                    break;
+                case "mul" :
+                    register.value *= regChng;
+                    break;
+                case "mod" :
+                    register.value = register.value % regChng;
+                    break;
+                case "snd" :
+                    freq = register.value;
+                    break;
+                case "rcv" :
+                    if( register.value != 0 ) {
+                        value[0] = (int) freq;
+                        j = input.size();
+                    }
+                    else
+                        break;
+                case "jgz" :
+                    if (register.value > 0 ){
+                        j += regChng-1;
+                    }
+                    else
+                        break;
+            }
+        }
+
         return value;
+    }
+
+    // method for checking value of register
+    public static long checkValue(ArrayList<Register> registers, String registerValue){
+        if ( registerValue.charAt(0) < 'a' )
+            return Challenges4.stringToInt(registerValue);
+        else
+            return findRegister(registers,registerValue).value;
+    }
+
+    // method for initializing registers
+    public static ArrayList<Register> initRegisters(ArrayList<String> input){
+        ArrayList<Register> registers = new ArrayList<>();
+        int i =0;
+
+        for (String inputLine : input){
+            String[] inputLineSplit = inputLine.split("\\s");
+            if( !containsRegister(registers, inputLineSplit[1]) ){
+                registers.add(new Register(inputLineSplit[1]));
+            }
+        }
+
+        return registers;
+    }
+
+    // method for locating a register in ArrayList of Registers
+    public static Register findRegister(ArrayList<Register> registers, String regName){
+        for( Register register : registers)
+            if ( register.name.equals(regName) )
+                return register;
+
+        return null;
+    }
+
+    // method for determining if register appears in ArrayList of Registers
+    public static boolean containsRegister(ArrayList<Register> registers, String regName){
+        for(Register register : registers){
+            if ( register.name.equals(regName) )
+                return true;
+        }
+        return false;
+    }
+
+    // method for scanning input for day 18 and day 23
+    public static ArrayList<String> scanInput18(String fileName){
+        ArrayList<String> input = new ArrayList<>();
+        try{ scanner = new Scanner(new File(fileName));}
+        catch (FileNotFoundException ex){System.out.println("Unable to find file");}
+
+        while ( scanner.hasNextLine() ){
+            input.add(scanner.nextLine());
+        }
+        return input;
+    }
+
+    // day 24
+    //******************************************************************************************************************
+    private static class Component{
+        int a = 0;
+        int b = 0;
+        boolean used = false;
+    }
+    private static ArrayList<Component> components = scanInput24();
+    public static int[] day24(){
+        int[] strongestBridge = new int[]{0,0,0};
+
+        return findStrongestBridge(0,0,0, strongestBridge);
+    }
+
+    // method for handling input
+    private static ArrayList<Component> scanInput24(){
+        String fileName = "day24";
+        String line;
+        ArrayList<Component> components = new ArrayList<>();
+
+        try{
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while ( (line = bufferedReader.readLine()) != null ){
+                Component component = new Component();
+                String[] tmp2 = line.split("/");
+                component.a = Challenges4.stringToInt(tmp2[0]);
+                component.b = Challenges4.stringToInt(tmp2[1]);
+                components.add(components.size(),component);
+            }
+
+            bufferedReader.close();
+        }
+        catch (FileNotFoundException e){
+            System.out.println("unable to find "+fileName);
+        }
+        catch (IOException e){
+            System.out.println("unable to read from "+fileName);
+        }
+
+        return components;
+    }
+
+    // method for finding strongest bridge
+    private static int[] findStrongestBridge(int port, int length, int strength, int[] Bridge){
+        Bridge[0] = Math.max(strength, Bridge[0]);
+         Bridge[2] = Math.max(length, Bridge[2]);
+
+        if (length == Bridge[2])
+            Bridge[1] = Math.max(strength,Bridge[1]);
+
+        for(Component component: components){
+            if(!component.used && (component.a == port || component.b == port)){
+                component.used = true;
+                findStrongestBridge( (component.a == port) ? component.b : component.a, length+1, strength+component.a+component.b,Bridge);
+                component.used = false;
+            }
+        }
+
+        return Bridge;
     }
 }
